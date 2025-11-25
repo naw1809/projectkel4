@@ -1,0 +1,113 @@
+@extends('layouts.app')
+
+@section('title', 'Edit Barang')
+
+@section('header')
+    <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold text-gray-900">Edit Barang</h1>
+        <div>
+            <a href="{{ route('items.index') }}"
+                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                <i class="fas fa-arrow-left mr-2"></i> Kembali
+            </a>
+        </div>
+    </div>
+@endsection
+
+@section('content')
+    <div class="card bg-white rounded-lg overflow-hidden">
+        <div class="p-6">
+            <form action="{{ route('items.update', $item->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="code" class="block text-sm font-medium text-gray-700">Kode Barang</label>
+                        <input type="text" name="code" id="code" required value="{{ old('code', $item->code) }}"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2 outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50">
+                        @error('code')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700">Nama Barang</label>
+                        <input type="text" name="name" id="name" required value="{{ old('name', $item->name) }}"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2 outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50">
+                        @error('name')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="category_id" class="block text-sm font-medium text-gray-700">Kategori</label>
+                        <select name="category_id" id="category_id" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2 outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50">
+                            <option value="">Pilih Kategori</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}"
+                                    {{ old('category_id', $item->category_id) == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('category_id')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="unit_id" class="block text-sm font-medium text-gray-700">Satuan</label>
+                        <select name="unit_id" id="unit_id" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2 outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50">
+                            <option value="">Pilih Satuan</option>
+                            @foreach ($units as $unit)
+                                <option value="{{ $unit->id }}"
+                                    {{ old('unit_id', $item->unit_id) == $unit->id ? 'selected' : '' }}>
+                                    {{ $unit->name }} ({{ $unit->symbol }})</option>
+                            @endforeach
+                        </select>
+                        @error('unit_id')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="stock" class="block text-sm font-medium text-gray-700">Stok</label>
+                        <input type="number" name="stock" id="stock" required
+                            value="{{ old('stock', $item->stock) }}" min="0"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2 outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50">
+                        @error('stock')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="price" class="block text-sm font-medium text-gray-700">Harga</label>
+                        <input type="number" name="price" id="price" required
+                            value="{{ old('price', $item->price) }}" min="0" step="0.01"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2 outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50">
+                        @error('price')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label for="description" class="block text-sm font-medium text-gray-700">Deskripsi</label>
+                        <textarea name="description" id="description" rows="3"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2 outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50">{{ old('description', $item->description) }}</textarea>
+                        @error('description')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="md:col-span-2 flex justify-end">
+                        <button type="submit"
+                            class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                            <i class="fas fa-save mr-2"></i> Simpan Perubahan
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+@endsection
