@@ -36,11 +36,13 @@ class ItemRequestController extends Controller
             'item_id' => 'required|exists:items,id',
             'quantity' => 'required|integer|min:1',
             'reason' => 'required|string',
+            'size' => 'nullable|string', // Validasi input size
         ]);
 
         $item = Item::findOrFail($request->item_id);
 
         // Check if requested quantity exceeds available stock
+        // Note: Jika stok per ukuran (size) ingin divalidasi spesifik, logic tambahan diperlukan di sini
         if ($request->quantity > $item->stock) {
             return back()
                 ->withInput()
@@ -50,6 +52,7 @@ class ItemRequestController extends Controller
         ItemRequest::create([
             'item_id' => $request->item_id,
             'user_id' => auth()->id(),
+            'size' => $request->size, // Simpan data size
             'quantity' => $request->quantity,
             'reason' => $request->reason,
             'status' => 'pending',
@@ -91,6 +94,7 @@ class ItemRequestController extends Controller
 
         return redirect()->route('item-requests.index')->with('success', 'Request approved successfully.');
     }
+    
     public function show(ItemRequest $itemRequest)
     {
         // Authorization check - only admin or the requester can view

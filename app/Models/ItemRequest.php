@@ -10,6 +10,7 @@ class ItemRequest extends Model
     protected $fillable = [
         'item_id',
         'user_id',
+        'size', // Menambahkan size agar bisa disimpan
         'quantity',
         'reason',
         'status',

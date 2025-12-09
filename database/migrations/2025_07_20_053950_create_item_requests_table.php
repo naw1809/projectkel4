@@ -10,6 +10,7 @@ return new class extends Migration {
         Schema::create('item_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('item_id')->constrained();
+            $table->string('size')->nullable(); // Menambahkan kolom size
             $table->foreignId('user_id')->constrained();
             $table->integer('quantity');
             $table->text('reason');
