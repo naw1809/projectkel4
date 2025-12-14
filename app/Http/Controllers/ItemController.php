@@ -58,7 +58,8 @@ class ItemController extends Controller
             $sizeSummary = null;
 
             if ($request->has('sizes') && is_array($request->sizes)) {
-                $totalStock = array_sum($request->stocks);
+                // PERBAIKAN: Tambahkan null coalescing operator (?? []) untuk keamanan
+                $totalStock = array_sum($request->stocks ?? []);
                 $sizeSummary = implode(', ', $request->sizes);
             }
 
@@ -121,8 +122,8 @@ class ItemController extends Controller
             $sizeSummary = null;
 
             if ($request->has('sizes') && is_array($request->sizes)) {
-                $totalStock = array_sum($request->stocks);
-                $sizeSummary = implode(', ', array_unique($request->sizes));
+                $totalStock = array_sum($request->stocks ?? []);
+                $sizeSummary = implode(', ', $request->sizes);
             }
 
             $item->update([

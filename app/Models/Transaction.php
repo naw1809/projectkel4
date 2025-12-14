@@ -29,4 +29,8 @@ class Transaction extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function itemSize()
+    {
+        return $this->belongsTo(ItemSize::class);
+    }
 }

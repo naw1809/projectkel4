@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>@yield('title') - {{ config('app.name', 'Sistem Manajemen Stok') }}</title>
-    <link rel="icon" href="{{ asset('image/sima1.png') }}" type="image/png">
+    <title><?php echo $__env->yieldContent('title'); ?> - <?php echo e(config('app.name', 'Sistem Manajemen Stok')); ?></title>
+    <link rel="icon" href="<?php echo e(asset('image/sima1.png')); ?>" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js"></script>
@@ -135,7 +135,7 @@
             outline: none;
         }
     </style>
-    @stack('styles')
+    <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
 
 <body class="h-full" x-data="{ mobileMenuOpen: false, profileMenuOpen: false }">
@@ -144,7 +144,7 @@
             <div class="flex flex-col w-64 bg-white border-r border-gray-200">
                 <div class="flex items-center justify-center h-16 px-4 bg-primary-700">
                     <div class="flex items-center">
-                        <img src="{{ asset('image/sima1.png') }}" alt="SIMASTOK" class="h-12 w-12 mr-2" />
+                        <img src="<?php echo e(asset('image/sima1.png')); ?>" alt="SIMASTOK" class="h-12 w-12 mr-2" />
                         
                     </div>
                 </div>
@@ -152,70 +152,71 @@
                     <div class="flex flex-col py-4">
                         <div class="px-4 mb-4">
                             <div class="flex items-center">
-                                @if(auth()->user()->profile_photo)
+                                <?php if(auth()->user()->profile_photo): ?>
                                     <img class="h-10 w-10 rounded-full object-cover" 
-                                        src="{{ asset('storage/' . auth()->user()->profile_photo) }}" 
-                                        alt="{{ auth()->user()->name }}">
-                                @else
+                                        src="<?php echo e(asset('storage/' . auth()->user()->profile_photo)); ?>" 
+                                        alt="<?php echo e(auth()->user()->name); ?>">
+                                <?php else: ?>
                                     <div class="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold">
-                                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                        <?php echo e(strtoupper(substr(auth()->user()->name, 0, 1))); ?>
+
                                     </div>
-                                @endif
+                                <?php endif; ?>
                                 <div class="ml-3">
-                                    <p class="text-sm font-medium text-gray-900">{{ auth()->user()->name }}</p>
-                                    <p class="text-xs text-gray-500">{{ auth()->user()->role }}</p>
+                                    <p class="text-sm font-medium text-gray-900"><?php echo e(auth()->user()->name); ?></p>
+                                    <p class="text-xs text-gray-500"><?php echo e(auth()->user()->role); ?></p>
                                 </div>
                             </div>
                         </div>
                         <nav class="flex-1 px-2 space-y-1">
-                            <a href="{{ route('dashboard') }}"
-                                class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md {{ request()->routeIs('dashboard') ? 'active' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                            <a href="<?php echo e(route('dashboard')); ?>"
+                                class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md <?php echo e(request()->routeIs('dashboard') ? 'active' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
                                 <i
-                                    class="fas fa-tachometer-alt mr-3 text-gray-400 group-hover:text-gray-500 {{ request()->routeIs('dashboard') ? 'text-primary-600' : '' }}"></i>
+                                    class="fas fa-tachometer-alt mr-3 text-gray-400 group-hover:text-gray-500 <?php echo e(request()->routeIs('dashboard') ? 'text-primary-600' : ''); ?>"></i>
                                 Dashboard
                             </a>
-                            <a href="{{ route('items.index') }}"
-                                class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md {{ request()->routeIs('items.*') ? 'active' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                            <a href="<?php echo e(route('items.index')); ?>"
+                                class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md <?php echo e(request()->routeIs('items.*') ? 'active' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
                                 <i
-                                    class="fas fa-boxes mr-3 text-gray-400 group-hover:text-gray-500 {{ request()->routeIs('items.*') ? 'text-primary-600' : '' }}"></i>
+                                    class="fas fa-boxes mr-3 text-gray-400 group-hover:text-gray-500 <?php echo e(request()->routeIs('items.*') ? 'text-primary-600' : ''); ?>"></i>
                                 Barang
                             </a>
-                            @if (auth()->user()->isAdmin())
-                                <a href="{{ route('transactions.index') }}"
-                                    class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md {{ request()->routeIs('transactions.*') ? 'active' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                            <?php if(auth()->user()->isAdmin()): ?>
+                                <a href="<?php echo e(route('transactions.index')); ?>"
+                                    class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md <?php echo e(request()->routeIs('transactions.*') ? 'active' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
                                     <i
-                                        class="fas fa-exchange-alt mr-3 text-gray-400 group-hover:text-gray-500 {{ request()->routeIs('transactions.*') ? 'text-primary-600' : '' }}"></i>
+                                        class="fas fa-exchange-alt mr-3 text-gray-400 group-hover:text-gray-500 <?php echo e(request()->routeIs('transactions.*') ? 'text-primary-600' : ''); ?>"></i>
                                     Transaksi
                                 </a>
-                            @endif
-                            <a href="{{ route('item-requests.index') }}"
-                                class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md {{ request()->routeIs('item-requests.*') ? 'active' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                            <?php endif; ?>
+                            <a href="<?php echo e(route('item-requests.index')); ?>"
+                                class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md <?php echo e(request()->routeIs('item-requests.*') ? 'active' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
                                 <i
-                                    class="fas fa-clipboard-list mr-3 text-gray-400 group-hover:text-gray-500 {{ request()->routeIs('item-requests.*') ? 'text-primary-600' : '' }}"></i>
+                                    class="fas fa-clipboard-list mr-3 text-gray-400 group-hover:text-gray-500 <?php echo e(request()->routeIs('item-requests.*') ? 'text-primary-600' : ''); ?>"></i>
                                 Permintaan Barang
                             </a>
 
-                            @if (auth()->user()->isAdmin())
+                            <?php if(auth()->user()->isAdmin()): ?>
                                 <div class="px-4 pt-4">
                                     <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Admin</h3>
                                 </div>
 
-                                <a href="{{ route('users.index') }}"
-                                    class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md {{ request()->routeIs('users.*') ? 'active' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                <a href="<?php echo e(route('users.index')); ?>"
+                                    class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md <?php echo e(request()->routeIs('users.*') ? 'active' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
                                     <i
-                                        class="fas fa-users mr-3 text-gray-400 group-hover:text-gray-500 {{ request()->routeIs('users.*') ? 'text-primary-600' : '' }}"></i>
+                                        class="fas fa-users mr-3 text-gray-400 group-hover:text-gray-500 <?php echo e(request()->routeIs('users.*') ? 'text-primary-600' : ''); ?>"></i>
                                     Pengguna
                                 </a>
-                                <a href="{{ route('categories.index') }}"
-                                    class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md {{ request()->routeIs('categories.*') ? 'active' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                <a href="<?php echo e(route('categories.index')); ?>"
+                                    class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md <?php echo e(request()->routeIs('categories.*') ? 'active' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
                                     <i
-                                        class="fas fa-tags mr-3 text-gray-400 group-hover:text-gray-500 {{ request()->routeIs('categories.*') ? 'text-primary-600' : '' }}"></i>
+                                        class="fas fa-tags mr-3 text-gray-400 group-hover:text-gray-500 <?php echo e(request()->routeIs('categories.*') ? 'text-primary-600' : ''); ?>"></i>
                                     Kategori
                                 </a>
-                                <a href="{{ route('units.index') }}"
-                                    class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md {{ request()->routeIs('units.*') ? 'active' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                <a href="<?php echo e(route('units.index')); ?>"
+                                    class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md <?php echo e(request()->routeIs('units.*') ? 'active' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
                                     <i
-                                        class="fas fa-balance-scale mr-3 text-gray-400 group-hover:text-gray-500 {{ request()->routeIs('units.*') ? 'text-primary-600' : '' }}"></i>
+                                        class="fas fa-balance-scale mr-3 text-gray-400 group-hover:text-gray-500 <?php echo e(request()->routeIs('units.*') ? 'text-primary-600' : ''); ?>"></i>
                                     Satuan
                                 </a>
 
@@ -238,35 +239,35 @@
                                         x-transition:leave="transition ease-in duration-75"
                                         x-transition:leave-start="transform opacity-100 scale-100"
                                         x-transition:leave-end="transform opacity-0 scale-95" class="pl-4 space-y-1">
-                                        @if (auth()->user()->isAdmin())
-                                            <a href="{{ route('reports.stock') }}"
-                                                class="group flex items-center px-4 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 {{ request()->routeIs('reports.stock*') ? 'text-primary-600 bg-primary-50' : '' }}">
+                                        <?php if(auth()->user()->isAdmin()): ?>
+                                            <a href="<?php echo e(route('reports.stock')); ?>"
+                                                class="group flex items-center px-4 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 <?php echo e(request()->routeIs('reports.stock*') ? 'text-primary-600 bg-primary-50' : ''); ?>">
                                                 <i class="fas fa-box mr-3 text-gray-400 group-hover:text-gray-500"></i>
                                                 Laporan Stok
                                             </a>
-                                        @endif
+                                        <?php endif; ?>
 
-                                        <a href="{{ route('reports.transactions') }}"
-                                            class="group flex items-center px-4 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 {{ request()->routeIs('reports.transactions*') ? 'text-primary-600 bg-primary-50' : '' }}">
+                                        <a href="<?php echo e(route('reports.transactions')); ?>"
+                                            class="group flex items-center px-4 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 <?php echo e(request()->routeIs('reports.transactions*') ? 'text-primary-600 bg-primary-50' : ''); ?>">
                                             <i
                                                 class="fas fa-exchange-alt mr-3 text-gray-400 group-hover:text-gray-500"></i>
                                             Laporan Transaksi
                                         </a>
-                                        <a href="{{ route('reports.requests') }}"
-                                            class="group flex items-center px-4 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 {{ request()->routeIs('reports.requests*') ? 'text-primary-600 bg-primary-50' : '' }}">
+                                        <a href="<?php echo e(route('reports.requests')); ?>"
+                                            class="group flex items-center px-4 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 <?php echo e(request()->routeIs('reports.requests*') ? 'text-primary-600 bg-primary-50' : ''); ?>">
                                             <i
                                                 class="fas fa-clipboard-list mr-3 text-gray-400 group-hover:text-gray-500"></i>
                                             Laporan Permintaan
                                         </a>
                                     </div>
                                 </div>
-                            @endif
+                            <?php endif; ?>
                         </nav>
                     </div>
                 </div>
                 <div class="p-4 border-t border-gray-200">
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
+                    <form method="POST" action="<?php echo e(route('logout')); ?>">
+                        <?php echo csrf_field(); ?>
                         <button type="submit"
                             class="group flex items-center w-full px-4 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50">
                             <i class="fas fa-sign-out-alt mr-3 text-gray-400 group-hover:text-gray-500"></i>
@@ -306,54 +307,54 @@
             </div>
             <div class="flex-1 h-0 overflow-y-auto">
                 <nav class="px-2 py-5 space-y-1">
-                    <a href="{{ route('dashboard') }}" @click="mobileMenuOpen = false"
-                        class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('dashboard') ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <a href="<?php echo e(route('dashboard')); ?>" @click="mobileMenuOpen = false"
+                        class="group flex items-center px-2 py-2 text-base font-medium rounded-md <?php echo e(request()->routeIs('dashboard') ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
                         <i
-                            class="fas fa-tachometer-alt mr-4 text-gray-400 group-hover:text-gray-500 {{ request()->routeIs('dashboard') ? 'text-primary-600' : '' }}"></i>
+                            class="fas fa-tachometer-alt mr-4 text-gray-400 group-hover:text-gray-500 <?php echo e(request()->routeIs('dashboard') ? 'text-primary-600' : ''); ?>"></i>
                         Dashboard
                     </a>
-                    <a href="{{ route('items.index') }}" @click="mobileMenuOpen = false"
-                        class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('items.*') ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <a href="<?php echo e(route('items.index')); ?>" @click="mobileMenuOpen = false"
+                        class="group flex items-center px-2 py-2 text-base font-medium rounded-md <?php echo e(request()->routeIs('items.*') ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
                         <i
-                            class="fas fa-boxes mr-4 text-gray-400 group-hover:text-gray-500 {{ request()->routeIs('items.*') ? 'text-primary-600' : '' }}"></i>
+                            class="fas fa-boxes mr-4 text-gray-400 group-hover:text-gray-500 <?php echo e(request()->routeIs('items.*') ? 'text-primary-600' : ''); ?>"></i>
                         Barang
                     </a>
-                    @if (auth()->user()->isAdmin())
-                        <a href="{{ route('transactions.index') }}" @click="mobileMenuOpen = false"
-                            class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('transactions.*') ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <?php if(auth()->user()->isAdmin()): ?>
+                        <a href="<?php echo e(route('transactions.index')); ?>" @click="mobileMenuOpen = false"
+                            class="group flex items-center px-2 py-2 text-base font-medium rounded-md <?php echo e(request()->routeIs('transactions.*') ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
                             <i
-                                class="fas fa-exchange-alt mr-4 text-gray-400 group-hover:text-gray-500 {{ request()->routeIs('transactions.*') ? 'text-primary-600' : '' }}"></i>
+                                class="fas fa-exchange-alt mr-4 text-gray-400 group-hover:text-gray-500 <?php echo e(request()->routeIs('transactions.*') ? 'text-primary-600' : ''); ?>"></i>
                             Transaksi
                         </a>
-                    @endif
-                    <a href="{{ route('item-requests.index') }}" @click="mobileMenuOpen = false"
-                        class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('item-requests.*') ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <?php endif; ?>
+                    <a href="<?php echo e(route('item-requests.index')); ?>" @click="mobileMenuOpen = false"
+                        class="group flex items-center px-2 py-2 text-base font-medium rounded-md <?php echo e(request()->routeIs('item-requests.*') ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
                         <i
-                            class="fas fa-clipboard-list mr-4 text-gray-400 group-hover:text-gray-500 {{ request()->routeIs('item-requests.*') ? 'text-primary-600' : '' }}"></i>
+                            class="fas fa-clipboard-list mr-4 text-gray-400 group-hover:text-gray-500 <?php echo e(request()->routeIs('item-requests.*') ? 'text-primary-600' : ''); ?>"></i>
                         Permintaan Barang
                     </a>
 
-                    @if (auth()->user()->isAdmin())
+                    <?php if(auth()->user()->isAdmin()): ?>
                         <div class="px-4 pt-4">
                             <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Admin</h3>
                         </div>
 
-                        <a href="{{ route('users.index') }}" @click="mobileMenuOpen = false"
-                            class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('users.*') ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        <a href="<?php echo e(route('users.index')); ?>" @click="mobileMenuOpen = false"
+                            class="group flex items-center px-2 py-2 text-base font-medium rounded-md <?php echo e(request()->routeIs('users.*') ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
                             <i
-                                class="fas fa-users mr-4 text-gray-400 group-hover:text-gray-500 {{ request()->routeIs('users.*') ? 'text-primary-600' : '' }}"></i>
+                                class="fas fa-users mr-4 text-gray-400 group-hover:text-gray-500 <?php echo e(request()->routeIs('users.*') ? 'text-primary-600' : ''); ?>"></i>
                             Pengguna
                         </a>
-                        <a href="{{ route('categories.index') }}" @click="mobileMenuOpen = false"
-                            class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('categories.*') ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        <a href="<?php echo e(route('categories.index')); ?>" @click="mobileMenuOpen = false"
+                            class="group flex items-center px-2 py-2 text-base font-medium rounded-md <?php echo e(request()->routeIs('categories.*') ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
                             <i
-                                class="fas fa-tags mr-4 text-gray-400 group-hover:text-gray-500 {{ request()->routeIs('categories.*') ? 'text-primary-600' : '' }}"></i>
+                                class="fas fa-tags mr-4 text-gray-400 group-hover:text-gray-500 <?php echo e(request()->routeIs('categories.*') ? 'text-primary-600' : ''); ?>"></i>
                             Kategori
                         </a>
-                        <a href="{{ route('units.index') }}" @click="mobileMenuOpen = false"
-                            class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('units.*') ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        <a href="<?php echo e(route('units.index')); ?>" @click="mobileMenuOpen = false"
+                            class="group flex items-center px-2 py-2 text-base font-medium rounded-md <?php echo e(request()->routeIs('units.*') ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
                             <i
-                                class="fas fa-balance-scale mr-4 text-gray-400 group-hover:text-gray-500 {{ request()->routeIs('units.*') ? 'text-primary-600' : '' }}"></i>
+                                class="fas fa-balance-scale mr-4 text-gray-400 group-hover:text-gray-500 <?php echo e(request()->routeIs('units.*') ? 'text-primary-600' : ''); ?>"></i>
                             Satuan
                         </a>
 
@@ -371,42 +372,43 @@
                                 </svg>
                             </button>
                             <div x-show="open" class="pl-4 space-y-1">
-                                @if (auth()->user()->isAdmin())
-                                    <a href="{{ route('reports.stock') }}" @click="mobileMenuOpen = false"
-                                        class="group flex items-center px-4 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 {{ request()->routeIs('reports.stock*') ? 'text-primary-600 bg-primary-50' : '' }}">
+                                <?php if(auth()->user()->isAdmin()): ?>
+                                    <a href="<?php echo e(route('reports.stock')); ?>" @click="mobileMenuOpen = false"
+                                        class="group flex items-center px-4 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 <?php echo e(request()->routeIs('reports.stock*') ? 'text-primary-600 bg-primary-50' : ''); ?>">
                                         <i class="fas fa-box mr-3 text-gray-400 group-hover:text-gray-500"></i>
                                         Laporan Stok
                                     </a>
-                                @endif
+                                <?php endif; ?>
 
-                                <a href="{{ route('reports.transactions') }}" @click="mobileMenuOpen = false"
-                                    class="group flex items-center px-4 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 {{ request()->routeIs('reports.transactions*') ? 'text-primary-600 bg-primary-50' : '' }}">
+                                <a href="<?php echo e(route('reports.transactions')); ?>" @click="mobileMenuOpen = false"
+                                    class="group flex items-center px-4 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 <?php echo e(request()->routeIs('reports.transactions*') ? 'text-primary-600 bg-primary-50' : ''); ?>">
                                     <i class="fas fa-exchange-alt mr-3 text-gray-400 group-hover:text-gray-500"></i>
                                     Laporan Transaksi
                                 </a>
-                                <a href="{{ route('reports.requests') }}" @click="mobileMenuOpen = false"
-                                    class="group flex items-center px-4 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 {{ request()->routeIs('reports.requests*') ? 'text-primary-600 bg-primary-50' : '' }}">
+                                <a href="<?php echo e(route('reports.requests')); ?>" @click="mobileMenuOpen = false"
+                                    class="group flex items-center px-4 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 <?php echo e(request()->routeIs('reports.requests*') ? 'text-primary-600 bg-primary-50' : ''); ?>">
                                     <i class="fas fa-clipboard-list mr-3 text-gray-400 group-hover:text-gray-500"></i>
                                     Laporan Permintaan
                                 </a>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?>
                 </nav>
             </div>
             <div class="p-4 border-t border-gray-200">
                 <div class="flex items-center">
                     <div
                         class="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        <?php echo e(strtoupper(substr(auth()->user()->name, 0, 1))); ?>
+
                     </div>
                     <div class="ml-3">
-                        <p class="text-sm font-medium text-gray-900">{{ auth()->user()->name }}</p>
-                        <p class="text-xs text-gray-500">{{ auth()->user()->role }}</p>
+                        <p class="text-sm font-medium text-gray-900"><?php echo e(auth()->user()->name); ?></p>
+                        <p class="text-xs text-gray-500"><?php echo e(auth()->user()->role); ?></p>
                     </div>
                 </div>
-                <form method="POST" action="{{ route('logout') }}" class="mt-4">
-                    @csrf
+                <form method="POST" action="<?php echo e(route('logout')); ?>" class="mt-4">
+                    <?php echo csrf_field(); ?>
                     <button type="submit"
                         class="group flex items-center w-full px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50">
                         <i class="fas fa-sign-out-alt mr-3 text-gray-400 group-hover:text-gray-500"></i>
@@ -427,7 +429,7 @@
                                     d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
                         </button>
-                        <h1 class="ml-4 text-lg font-semibold text-gray-900">@yield('title')</h1>
+                        <h1 class="ml-4 text-lg font-semibold text-gray-900"><?php echo $__env->yieldContent('title'); ?></h1>
                     </div>
                     <div class="flex items-center">
                         <div class="relative ml-3">
@@ -437,16 +439,17 @@
                                 id="user-menu-button" aria-expanded="false" aria-haspopup="true">
                                 <span class="sr-only">Open user menu</span>
                                 
-                                {{-- LOGIKA BARU: Tampilkan Foto jika ada --}}
-                                @if(auth()->user()->profile_photo)
+                                
+                                <?php if(auth()->user()->profile_photo): ?>
                                     <img class="h-8 w-8 rounded-full object-cover" 
-                                        src="{{ asset('storage/' . auth()->user()->profile_photo) }}" 
-                                        alt="{{ auth()->user()->name }}">
-                                @else
+                                        src="<?php echo e(asset('storage/' . auth()->user()->profile_photo)); ?>" 
+                                        alt="<?php echo e(auth()->user()->name); ?>">
+                                <?php else: ?>
                                     <div class="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold">
-                                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                        <?php echo e(strtoupper(substr(auth()->user()->name, 0, 1))); ?>
+
                                     </div>
-                                @endif
+                                <?php endif; ?>
                             </button>
                             </div>
                             <div x-show="profileMenuOpen" @click.away="profileMenuOpen = false" x-transition
@@ -454,8 +457,8 @@
                                 role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button"
                                 tabindex="-1">
 
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
+                                <form method="POST" action="<?php echo e(route('logout')); ?>">
+                                    <?php echo csrf_field(); ?>
                                     <button type="submit"
                                         class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         role="menuitem" tabindex="-1" id="user-menu-item-2">Keluar</button>
@@ -469,16 +472,16 @@
             <div class="flex-1 overflow-y-auto">
                 <main class="p-4 sm:px-6 lg:px-8">
                     <div class="mb-6">
-                        @yield('header')
+                        <?php echo $__env->yieldContent('header'); ?>
                     </div>
                     
-                    @yield('content')
+                    <?php echo $__env->yieldContent('content'); ?>
                 </main>
             </div>
         </div>
     </div>
     
-    <script src="{{ asset('sweetalert/sweetalert2.all.min.js') }}"></script>
+    <script src="<?php echo e(asset('sweetalert/sweetalert2.all.min.js')); ?>"></script>
     <script>
         const Toast = Swal.mixin({
             toast: true,
@@ -492,30 +495,30 @@
             }
         });
 
-        @if (session('success'))
+        <?php if(session('success')): ?>
             Toast.fire({
                 icon: 'success',
-                title: '{{ session('success') }}'
+                title: '<?php echo e(session('success')); ?>'
             });
-        @endif
+        <?php endif; ?>
 
-        @if (session('error'))
+        <?php if(session('error')): ?>
             Toast.fire({
                 icon: 'error',
-                title: '{{ session('error') }}'
+                title: '<?php echo e(session('error')); ?>'
             });
-        @endif
+        <?php endif; ?>
         
-        @if (session('warning'))
+        <?php if(session('warning')): ?>
             Toast.fire({
                 icon: 'warning',
-                title: '{{ session('warning') }}'
+                title: '<?php echo e(session('warning')); ?>'
             });
-        @endif
+        <?php endif; ?>
     </script>
     
 
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 
-</html>
+</html><?php /**PATH C:\laragon\www\laravel-inventory-gudang\resources\views/layouts/app.blade.php ENDPATH**/ ?>

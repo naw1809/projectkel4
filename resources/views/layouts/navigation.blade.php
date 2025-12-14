@@ -121,16 +121,21 @@
             @endif
         </div>
         @auth
-            <div class="pt-4 pb-3 border-t border-blue-700">
-                <div class="flex items-center px-5">
-                    <div class="flex-shrink-0">
-                        {{-- LOGIKA FOTO PROFIL DI MOBILE MENU --}}
-                        @if(auth()->user()->profile_photo)
-                            <img class="h-10 w-10 rounded-full object-cover" src="{{ asset('storage/' . auth()->user()->profile_photo) }}" alt="{{ auth()->user()->name }}">
-                        @else
-                            <div class="h-10 w-10 rounded-full bg-blue-300 flex items-center justify-center text-blue-800 font-bold">
-                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                            </div>
+            <div class="flex-shrink-0">
+                        {{-- TAMBAHAN: Link ke Profile --}}
+                        <a href="{{ route('profile') }}">
+                            @if(auth()->user()->profile_photo)
+                                <img class="h-10 w-10 rounded-full object-cover" src="{{ asset('storage/' . auth()->user()->profile_photo) }}" alt="{{ auth()->user()->name }}">
+                            @else
+                                <div class="h-10 w-10 rounded-full bg-blue-300 flex items-center justify-center text-blue-800 font-bold">
+                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                </div>
+                            @endif
+                        </a>
+                    </div>
+                            @endif
+                        </a>
+                    </div>
                         @endif
                     </div>
                     <div class="ml-3">

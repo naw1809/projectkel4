@@ -43,5 +43,5 @@ class Item extends Model
     public function itemRequests(): HasMany
     {
         return $this->hasMany(ItemRequest::class);
-    }
+    }   
 }
