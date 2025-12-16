@@ -28,8 +28,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    // PROFILE ROUTE (Tambahkan ini)
+    
+    // --- TAMBAHKAN BARIS INI (Route Profile) ---
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+    // -------------------------------------------
 
     // Admin Only Routes
     Route::middleware('admin')->group(function () {
@@ -66,6 +68,4 @@ Route::middleware('auth')->group(function () {
     Route::resource('item-requests', ItemRequestController::class)->except(['edit', 'update', 'destroy']);
     Route::post('/item-requests/{item_request}/approve', [ItemRequestController::class, 'approve'])->name('item-requests.approve');
     Route::post('/item-requests/{item_request}/reject', [ItemRequestController::class, 'reject'])->name('item-requests.reject');
-
-    
 });

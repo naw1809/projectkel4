@@ -98,4 +98,13 @@ class UserController extends Controller
         $user->delete();
         return redirect()->route('users.index')->with('success', 'User deleted successfully.');
     }
+    // ... kode destroy ...
+
+    // TAMBAHKAN KODE INI DI BAGIAN PALING BAWAH (SEBELUM KURUNG KURAWAL PENUTUP KELAS)
+    public function profile()
+    {
+        // Menggunakan view edit user, tapi datanya diambil dari user yang login saat ini
+        return view('users.edit', ['user' => auth()->user()]);
+    }
+
 }
