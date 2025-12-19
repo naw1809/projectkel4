@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Kategori - Design Frontend</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-100 font-sans antialiased">
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- Sidebar -->
+        <div class="hidden md:flex md:flex-shrink-0 bg-white border-r border-gray-200 w-64">
+             <div class="flex flex-col flex-1 pt-5 pb-4">
+                <div class="flex items-center flex-shrink-0 px-4 mb-6">
+                     <span class="text-xl font-bold text-primary-600">InventorySystem</span>
+                </div>
+                <nav class="mt-5 flex-1 px-2 space-y-1 bg-white">
+                    <a href="#" class="group flex items-center px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900">
+                        <i class="fas fa-home mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" class="bg-primary-50 text-primary-600 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-tags mr-3 text-primary-500"></i>
+                        Kategori
+                    </a>
+                    <a href="#" class="group flex items-center px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900">
+                        <i class="fas fa-box mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                        Barang
+                    </a>
+                    <a href="#" class="group flex items-center px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900">
+                        <i class="fas fa-users mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                        Pengguna
+                    </a>
+                </nav>
+             </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex flex-col w-0 flex-1 overflow-hidden">
+
+             <!-- Topbar -->
+             <header class="bg-white shadow h-16 flex items-center justify-between px-6 z-10">
+                <button class="md:hidden text-gray-500 focus:outline-none">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="flex-1 flex justify-between items-center h-full">
+                    <div class="flex-1 flex items-center">
+                        <!-- Search Bar placeholder -->
+                        <div class="relative w-full max-w-xs ml-4 md:ml-0">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                            <input class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm" placeholder="Cari..." type="search">
+                        </div>
+                    </div>
+                    <div class="ml-4 flex items-center md:ml-6">
+                        <button class="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                        <div class="ml-3 relative">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm font-medium text-gray-700">Admin User</span>
+                                <img class="h-8 w-8 rounded-full bg-gray-300" src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+             </header>
+
+             <main class="flex-1 relative overflow-y-auto focus:outline-none p-6" id="main-container">
+
+                  <!-- View: List Categories -->
+                  <div id="view-list" class="space-y-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                            <div>
+                                <h1 class="text-2xl font-bold text-gray-900">Manajemen Kategori</h1>
+                                <p class="mt-1 text-sm text-gray-500">Daftar semua kategori barang dalam inventaris.</p>
+                            </div>
+                            <button onclick="showCreateForm()"
+                                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 mt-4 md:mt-0 transition-colors duration-200">
+                                <i class="fas fa-plus mr-2"></i> Tambah Kategori
+                            </button>
+                        </div>
+
+                        <!-- Filters/Search for Table -->
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col md:flex-row justify-between gap-4">
+                             <div class="w-full md:w-1/3">
+                                 <input type="text" placeholder="Cari kategori..." class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-4 py-2 border">
+                             </div>
+                             <div class="flex space-x-2">
+                                 <button class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                                     <i class="fas fa-filter mr-2 text-gray-400"></i> Filter
+                                 </button>
+                                 <button class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                                     <i class="fas fa-download mr-2 text-gray-400"></i> Export
+                                 </button>
+                             </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deskripsi</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Barang</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200" id="category-table-body">
+                                        <!-- Row 1 -->
+                                        <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div class="flex-shrink-0 h-10 w-10 bg-primary-100 rounded-full flex items-center justify-center text-primary-600">
+                                                        <i class="fas fa-laptop"></i>
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-gray-900">Elektronik</div>
+                                                        <div class="text-xs text-gray-500">ID: CAT-001</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <div class="text-sm text-gray-900 line-clamp-2">Perangkat elektronik seperti Laptop, PC, dan aksesorisnya.</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                    124 Item
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                    Aktif
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div class="flex space-x-2">
+                                                    <button onclick="showEditForm('Elektronik', 'Perangkat elektronik seperti Laptop, PC, dan aksesorisnya.')"
+                                                        class="group inline-flex items-center px-3 py-1.5 border border-blue-500 rounded-md text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                                                        <i class="fas fa-edit mr-1 group-hover:animate-pulse"></i> Edit
+                                                    </button>
+                                                    <button onclick="confirmDelete(this)"
+                                                        class="group inline-flex items-center px-3 py-1.5 border border-red-500 rounded-md text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
+                                                        <i class="fas fa-trash mr-1 group-hover:animate-bounce"></i> Hapus
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <!-- Row 2 -->
+                                        <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div class="flex-shrink-0 h-10 w-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                                                        <i class="fas fa-couch"></i>
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-gray-900">Furniture</div>
+                                                        <div class="text-xs text-gray-500">ID: CAT-002</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <div class="text-sm text-gray-900 line-clamp-2">Meja, kursi, lemari dan perabotan kantor lainnya.</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                    45 Item
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                    Aktif
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div class="flex space-x-2">
+                                                    <button onclick="showEditForm('Furniture', 'Meja, kursi, lemari dan perabotan kantor lainnya.')"
+                                                        class="inline-flex items-center px-3 py-1.5 border border-blue-500 rounded-md text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                                                        <i class="fas fa-edit mr-1"></i> Edit
+                                                    </button>
+                                                    <button onclick="confirmDelete(this)"
+                                                        class="inline-flex items-center px-3 py-1.5 border border-red-500 rounded-md text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
+                                                        <i class="fas fa-trash mr-1"></i> Hapus
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <!-- Row 3 -->
+                                        <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div class="flex-shrink-0 h-10 w-10 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600">
+                                                        <i class="fas fa-tools"></i>
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-gray-900">Perlengkapan</div>
+                                                        <div class="text-xs text-gray-500">ID: CAT-003</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <div class="text-sm text-gray-900 line-clamp-2">Perlengkapan habis pakai seperti kertas, tinta, dll.</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                    320 Item
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                    Aktif
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div class="flex space-x-2">
+                                                    <button onclick="showEditForm('Perlengkapan', 'Perlengkapan habis pakai seperti kertas, tinta, dll.')"
+                                                        class="inline-flex items-center px-3 py-1.5 border border-blue-500 rounded-md text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                                                        <i class="fas fa-edit mr-1"></i> Edit
+                                                    </button>
+                                                    <button onclick="confirmDelete(this)"
+                                                        class="inline-flex items-center px-3 py-1.5 border border-red-500 rounded-md text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
+                                                        <i class="fas fa-trash mr-1"></i> Hapus
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Pagination -->
+                            <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                                <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                                    <div>
+                                        <p class="text-sm text-gray-700">
+                                            Menampilkan <span class="font-medium">1</span> sampai <span class="font-medium">3</span> dari <span class="font-medium">3</span> hasil
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                            <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                                <span class="sr-only">Previous</span>
+                                                <i class="fas fa-chevron-left h-5 w-5"></i>
+                                            </a>
+                                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">1</a>
+                                            <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                                <span class="sr-only">Next</span>
+                                                <i class="fas fa-chevron-right h-5 w-5"></i>
+                                            </a>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                  </div>
+
+                  <!-- View: Form (Create/Edit) -->
+                  <div id="view-form" class="hidden space-y-6">
+                        <div class="flex items-center justify-between">
+                            <h1 id="form-title" class="text-2xl font-bold text-gray-900">Tambah Kategori Baru</h1>
+                            <div>
+                                <button onclick="showListView()"
+                                    class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+                                    <i class="fas fa-arrow-left mr-2"></i> Kembali
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+                            <div class="p-6">
+                                <form id="category-form" onsubmit="handleFormSubmit(event)">
+                                    <div class="space-y-6">
+
+                                        <!-- Name Field -->
+                                        <div>
+                                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
+                                                Nama Kategori <span class="text-red-500">*</span>
+                                            </label>
+                                            <div class="mt-1 relative rounded-md shadow-sm">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <i class="fas fa-tag text-gray-400"></i>
+                                                </div>
+                                                <input type="text" name="name" id="name" required placeholder="Contoh: Elektronik"
+                                                    class="focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md px-3 py-2 border">
+                                            </div>
+                                            <p class="mt-1 text-xs text-gray-500">Nama kategori harus unik.</p>
+                                        </div>
+
+                                        <!-- Description Field -->
+                                        <div>
+                                            <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                                            <div class="mt-1">
+                                                <textarea name="description" id="description" rows="4" placeholder="Deskripsi singkat mengenai kategori ini..."
+                                                    class="focus:ring-primary-500 focus:border-primary-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md px-3 py-2 border"></textarea>
+                                            </div>
+                                            <p class="mt-1 text-xs text-gray-500">Opsional. Maksimal 255 karakter.</p>
+                                        </div>
+
+                                        <!-- Status Toggle (Extra Design Element) -->
+                                        <div class="flex items-center">
+                                            <button type="button" class="bg-primary-600 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" aria-pressed="true">
+                                                <span class="sr-only">Use setting</span>
+                                                <span aria-hidden="true" class="translate-x-5 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>
+                                            </button>
+                                            <span class="ml-3 text-sm font-medium text-gray-900">Status Aktif</span>
+                                        </div>
+
+                                        <div class="pt-5 border-t border-gray-200 flex justify-end">
+                                            <button type="button" onclick="showListView()" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 mr-3">
+                                                Batal
+                                            </button>
+                                            <button type="submit"
+                                                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+                                                <i class="fas fa-save mr-2"></i> Simpan
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                  </div>
+
+             </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // View switching logic
+        const viewList = document.getElementById('view-list');
+        const viewForm = document.getElementById('view-form');
+        const formTitle = document.getElementById('form-title');
+        const categoryForm = document.getElementById('category-form');
+        const nameInput = document.getElementById('name');
+        const descInput = document.getElementById('description');
+
+        function showListView() {
+            viewList.classList.remove('hidden');
+            viewForm.classList.add('hidden');
+            // Reset form
+            categoryForm.reset();
+        }
+
+        function showCreateForm() {
+            viewList.classList.add('hidden');
+            viewForm.classList.remove('hidden');
+            formTitle.textContent = 'Tambah Kategori Baru';
+            nameInput.value = '';
+            descInput.value = '';
+            nameInput.focus();
+        }
+
+        function showEditForm(name, description) {
+            viewList.classList.add('hidden');
+            viewForm.classList.remove('hidden');
+            formTitle.textContent = 'Edit Kategori';
+            nameInput.value = name;
+            descInput.value = description;
+            nameInput.focus();
+        }
+
+        // Mock Form Submit
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            // Show loading state (optional)
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: 'Data kategori berhasil disimpan.',
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    showListView();
+                });
+            }, 800); // Simulate network delay
+        }
+
+        // Delete Confirmation
+        function confirmDelete(button) {
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data kategori ini akan dihapus permanen!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Remove row from table for visual effect
+                    const row = button.closest('tr');
+                    row.style.transition = 'opacity 0.5s';
+                    row.style.opacity = '0';
+                    setTimeout(() => {
+                        row.remove();
+                        Swal.fire(
+                            'Terhapus!',
+                            'Data kategori telah dihapus.',
+                            'success'
+                        )
+                    }, 500);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
