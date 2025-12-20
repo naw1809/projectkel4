@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desain Flow Permintaan Barang</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800" x-data="appData()">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fa-solid fa-boxes-stacked text-blue-600 text-2xl mr-2"></i>
+                        <span class="font-bold text-xl text-gray-800">InventarisApp</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- Role Switcher for Demo -->
+                    <div class="flex bg-gray-200 rounded-lg p-1">
+                        <button
+                            @click="switchRole('staff')"
+                            :class="{'bg-white shadow': currentUser.role === 'staff'}"
+                            class="px-3 py-1 text-sm rounded-md transition-all duration-200"
+                        >Staff</button>
+                        <button
+                            @click="switchRole('admin')"
+                            :class="{'bg-white shadow': currentUser.role === 'admin'}"
+                            class="px-3 py-1 text-sm rounded-md transition-all duration-200"
+                        >Admin</button>
+                    </div>
+
+                    <div class="flex items-center">
+                        <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold mr-2">
+                            <span x-text="currentUser.name.charAt(0)"></span>
+                        </div>
+                        <span x-text="currentUser.name" class="font-medium"></span>
+                        <span class="ml-2 px-2 py-0.5 text-xs rounded-full bg-gray-200 text-gray-600 uppercase" x-text="currentUser.role"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Header Section -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Permintaan Barang</h1>
+            <p class="mt-2 text-gray-600">Kelola proses permintaan barang dari pengajuan hingga persetujuan.</p>
+        </div>
+
+        <!-- STAFF VIEW -->
+        <template x-if="currentUser.role === 'staff'">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Form Pengajuan -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fa-solid fa-plus-circle text-blue-500 mr-2"></i>
+                            Buat Permintaan Baru
+                        </h2>
+
+                        <form @submit.prevent="submitRequest">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Barang</label>
+                                    <select x-model="form.item_id" class="w-full rounded-lg border-gray-300 border p-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">-- Pilih Barang --</option>
+                                        <template x-for="item in items" :key="item.id">
+                                            <option :value="item.id" x-text="item.name + ' (Stok: ' + item.stock + ' ' + item.unit + ')'"></option>
+                                        </template>
+                                    </select>
+                                </div>
+
+                                <template x-if="getSelectedItem() && getSelectedItem().sizes.length > 0">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Ukuran</label>
+                                        <select x-model="form.size" class="w-full rounded-lg border-gray-300 border p-2 focus:ring-blue-500 focus:border-blue-500">
+                                            <option value="">-- Pilih Ukuran --</option>
+                                            <template x-for="size in getSelectedItem().sizes" :key="size">
+                                                <option :value="size" x-text="size"></option>
+                                            </template>
+                                        </select>
+                                    </div>
+                                </template>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah</label>
+                                    <input type="number" x-model="form.quantity" min="1" class="w-full rounded-lg border-gray-300 border p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Masukkan jumlah">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Alasan Permintaan</label>
+                                    <textarea x-model="form.reason" rows="3" class="w-full rounded-lg border-gray-300 border p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Contoh: Untuk kebutuhan proyek X"></textarea>
+                                </div>
+
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-150 flex justify-center items-center">
+                                    <i class="fa-solid fa-paper-plane mr-2"></i>
+                                    Ajukan Permintaan
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- List Permintaan Saya -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                            <h2 class="text-lg font-semibold">Riwayat Permintaan Saya</h2>
+                            <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full" x-text="myRequests.length + ' Permintaan'"></span>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Barang</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <template x-if="myRequests.length === 0">
+                                        <tr>
+                                            <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                                                <i class="fa-regular fa-folder-open text-4xl mb-3 text-gray-300"></i>
+                                                <p>Belum ada permintaan yang diajukan</p>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                    <template x-for="req in myRequests" :key="req.id">
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div class="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500">
+                                                        <i class="fa-solid fa-box"></i>
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-gray-900" x-text="getItemName(req.item_id)"></div>
+                                                        <div class="text-sm text-gray-500" x-text="req.size ? 'Ukuran: ' + req.size : '-'"></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900" x-text="req.quantity + ' ' + getItemUnit(req.item_id)"></div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="formatDate(req.created_at)"></td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span
+                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                                    :class="{
+                                                        'bg-yellow-100 text-yellow-800': req.status === 'pending',
+                                                        'bg-green-100 text-green-800': req.status === 'approved',
+                                                        'bg-red-100 text-red-800': req.status === 'rejected'
+                                                    }"
+                                                    x-text="getStatusLabel(req.status)">
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <div class="text-sm text-gray-900 line-clamp-2" x-text="req.reason"></div>
+                                                <template x-if="req.status === 'rejected' && req.rejection_reason">
+                                                    <div class="text-xs text-red-600 mt-1 italic" x-text="'Alasan tolak: ' + req.rejection_reason"></div>
+                                                </template>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- ADMIN VIEW -->
+        <template x-if="currentUser.role === 'admin'">
+            <div class="space-y-8">
+                <!-- Statistik Ringkas -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex items-center">
+                        <div class="p-3 rounded-full bg-yellow-100 text-yellow-600 mr-4">
+                            <i class="fa-solid fa-clock text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Menunggu Persetujuan</p>
+                            <h3 class="text-2xl font-bold text-gray-900" x-text="requests.filter(r => r.status === 'pending').length"></h3>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex items-center">
+                        <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
+                            <i class="fa-solid fa-check-circle text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Disetujui (Hari Ini)</p>
+                            <h3 class="text-2xl font-bold text-gray-900" x-text="requests.filter(r => r.status === 'approved').length"></h3>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex items-center">
+                        <div class="p-3 rounded-full bg-red-100 text-red-600 mr-4">
+                            <i class="fa-solid fa-times-circle text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Ditolak (Total)</p>
+                            <h3 class="text-2xl font-bold text-gray-900" x-text="requests.filter(r => r.status === 'rejected').length"></h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabel Persetujuan -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+                        <h2 class="text-lg font-semibold text-gray-800">Daftar Permintaan Masuk</h2>
+
+                        <!-- Filter Status -->
+                        <div class="flex space-x-2">
+                            <button @click="filterStatus = 'all'" :class="{'bg-blue-600 text-white': filterStatus === 'all', 'bg-white text-gray-700 hover:bg-gray-100': filterStatus !== 'all'}" class="px-3 py-1 text-sm rounded-md border border-gray-300 transition-colors">Semua</button>
+                            <button @click="filterStatus = 'pending'" :class="{'bg-yellow-500 text-white border-yellow-500': filterStatus === 'pending', 'bg-white text-gray-700 hover:bg-gray-100': filterStatus !== 'pending'}" class="px-3 py-1 text-sm rounded-md border border-gray-300 transition-colors">Pending</button>
+                            <button @click="filterStatus = 'approved'" :class="{'bg-green-600 text-white border-green-600': filterStatus === 'approved', 'bg-white text-gray-700 hover:bg-gray-100': filterStatus !== 'approved'}" class="px-3 py-1 text-sm rounded-md border border-gray-300 transition-colors">Disetujui</button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pemohon</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Barang</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <template x-if="filteredRequests.length === 0">
+                                    <tr>
+                                        <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                                            Tidak ada data permintaan yang sesuai filter.
+                                        </td>
+                                    </tr>
+                                </template>
+                                <template x-for="req in filteredRequests" :key="req.id">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold mr-3">
+                                                    <span x-text="getUserName(req.user_id).charAt(0)"></span>
+                                                </div>
+                                                <div>
+                                                    <div class="text-sm font-medium text-gray-900" x-text="getUserName(req.user_id)"></div>
+                                                    <div class="text-xs text-gray-500" x-text="formatDate(req.created_at)"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-sm text-gray-900 font-medium" x-text="getItemName(req.item_id)"></div>
+                                            <div class="text-sm text-gray-500" x-text="req.size ? 'Ukuran: ' + req.size : '-'"></div>
+                                            <div class="text-xs text-gray-500 mt-1 italic bg-gray-100 p-1 rounded inline-block" x-text="'Alasan: ' + req.reason"></div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900" x-text="req.quantity + ' ' + getItemUnit(req.item_id)"></div>
+                                            <div class="text-xs" :class="checkStock(req.item_id, req.quantity) ? 'text-green-600' : 'text-red-600'" x-text="checkStock(req.item_id, req.quantity) ? 'Stok Tersedia' : 'Stok Kurang'"></div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                                :class="{
+                                                    'bg-yellow-100 text-yellow-800': req.status === 'pending',
+                                                    'bg-green-100 text-green-800': req.status === 'approved',
+                                                    'bg-red-100 text-red-800': req.status === 'rejected'
+                                                }"
+                                                x-text="getStatusLabel(req.status)">
+                                            </span>
+                                            <template x-if="req.processed_by">
+                                                <div class="text-xs text-gray-400 mt-1">Oleh: <span x-text="getUserName(req.processed_by)"></span></div>
+                                            </template>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <template x-if="req.status === 'pending'">
+                                                <div class="flex space-x-2">
+                                                    <button @click="approveRequest(req)" class="text-white bg-green-600 hover:bg-green-700 px-3 py-1.5 rounded-md text-xs flex items-center">
+                                                        <i class="fa-solid fa-check mr-1"></i> Setuju
+                                                    </button>
+                                                    <button @click="rejectRequest(req)" class="text-white bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-md text-xs flex items-center">
+                                                        <i class="fa-solid fa-xmark mr-1"></i> Tolak
+                                                    </button>
+                                                </div>
+                                            </template>
+                                            <template x-if="req.status !== 'pending'">
+                                                <span class="text-gray-400 text-sm italic">Selesai</span>
+                                            </template>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+    </div>
+
+    <script>
+        function appData() {
+            return {
+                users: [
+                    { id: 1, name: 'Budi (Staff)', role: 'staff' },
+                    { id: 2, name: 'Siti (Admin)', role: 'admin' },
+                    { id: 3, name: 'Andi (Staff)', role: 'staff' }
+                ],
+                currentUser: { id: 1, name: 'Budi (Staff)', role: 'staff' },
+
+                items: [
+                    { id: 101, name: 'Laptop Dell Latitude', stock: 15, unit: 'Unit', sizes: [] },
+                    { id: 102, name: 'Kertas A4', stock: 50, unit: 'Rim', sizes: [] },
+                    { id: 103, name: 'Seragam Lapangan', stock: 30, unit: 'Pcs', sizes: ['S', 'M', 'L', 'XL'] },
+                    { id: 104, name: 'Tinta Printer Epson', stock: 8, unit: 'Botol', sizes: ['Black', 'Cyan', 'Magenta', 'Yellow'] }
+                ],
+
+                requests: [
+                    {
+                        id: 1,
+                        item_id: 102,
+                        user_id: 3,
+                        quantity: 2,
+                        reason: 'Untuk cetak laporan bulanan',
+                        status: 'pending',
+                        created_at: new Date(Date.now() - 86400000).toISOString(),
+                        processed_by: null,
+                        rejection_reason: null
+                    },
+                    {
+                        id: 2,
+                        item_id: 101,
+                        user_id: 1,
+                        quantity: 1,
+                        reason: 'Laptop lama rusak',
+                        status: 'approved',
+                        created_at: new Date(Date.now() - 172800000).toISOString(),
+                        processed_by: 2,
+                        rejection_reason: null
+                    }
+                ],
+
+                form: {
+                    item_id: '',
+                    size: '',
+                    quantity: '',
+                    reason: ''
+                },
+
+                filterStatus: 'all',
+
+                switchRole(role) {
+                    if (role === 'staff') {
+                        this.currentUser = this.users[0];
+                    } else {
+                        this.currentUser = this.users[1];
+                    }
+
+                    // Show toast
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                    Toast.fire({
+                        icon: 'info',
+                        title: `Beralih ke mode ${role.toUpperCase()}`
+                    });
+                },
+
+                get myRequests() {
+                    // Filter requests for current logged in user and sort by newest
+                    return this.requests
+                        .filter(r => r.user_id === this.currentUser.id)
+                        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                },
+
+                get filteredRequests() {
+                    let data = this.requests.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    if (this.filterStatus !== 'all') {
+                        data = data.filter(r => r.status === this.filterStatus);
+                    }
+                    return data;
+                },
+
+                getItemName(id) {
+                    const item = this.items.find(i => i.id == id);
+                    return item ? item.name : 'Unknown Item';
+                },
+
+                getItemUnit(id) {
+                    const item = this.items.find(i => i.id == id);
+                    return item ? item.unit : '';
+                },
+
+                getUserName(id) {
+                    const user = this.users.find(u => u.id == id);
+                    return user ? user.name : 'Unknown User';
+                },
+
+                getSelectedItem() {
+                    if (!this.form.item_id) return null;
+                    return this.items.find(i => i.id == this.form.item_id);
+                },
+
+                getStatusLabel(status) {
+                    const labels = {
+                        'pending': 'Menunggu',
+                        'approved': 'Disetujui',
+                        'rejected': 'Ditolak'
+                    };
+                    return labels[status] || status;
+                },
+
+                formatDate(dateString) {
+                    const options = { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' };
+                    return new Date(dateString).toLocaleDateString('id-ID', options);
+                },
+
+                checkStock(itemId, qty) {
+                    const item = this.items.find(i => i.id == itemId);
+                    return item && item.stock >= qty;
+                },
+
+                submitRequest() {
+                    if (!this.form.item_id || !this.form.quantity || !this.form.reason) {
+                        Swal.fire('Error', 'Mohon lengkapi semua data', 'error');
+                        return;
+                    }
+
+                    // Check size requirement
+                    const item = this.getSelectedItem();
+                    if (item.sizes.length > 0 && !this.form.size) {
+                         Swal.fire('Error', 'Mohon pilih ukuran barang', 'error');
+                         return;
+                    }
+
+                    // Create new request
+                    const newRequest = {
+                        id: this.requests.length + 1,
+                        item_id: this.form.item_id,
+                        user_id: this.currentUser.id,
+                        quantity: parseInt(this.form.quantity),
+                        size: this.form.size,
+                        reason: this.form.reason,
+                        status: 'pending',
+                        created_at: new Date().toISOString(),
+                        processed_by: null,
+                        rejection_reason: null
+                    };
+
+                    this.requests.unshift(newRequest);
+
+                    // Reset form
+                    this.form = { item_id: '', size: '', quantity: '', reason: '' };
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: 'Permintaan barang berhasil diajukan',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                },
+
+                approveRequest(req) {
+                    // Check stock first
+                    if (!this.checkStock(req.item_id, req.quantity)) {
+                        Swal.fire('Stok Tidak Cukup', 'Stok barang saat ini kurang dari jumlah permintaan.', 'warning');
+                        return;
+                    }
+
+                    Swal.fire({
+                        title: 'Setujui Permintaan?',
+                        text: "Stok barang akan berkurang otomatis.",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ya, Setujui',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Update status
+                            req.status = 'approved';
+                            req.processed_by = this.currentUser.id;
+
+                            // Decrease Mock Stock
+                            const item = this.items.find(i => i.id == req.item_id);
+                            if (item) {
+                                item.stock -= req.quantity;
+                            }
+
+                            Swal.fire(
+                                'Disetujui!',
+                                'Permintaan telah disetujui.',
+                                'success'
+                            );
+                        }
+                    });
+                },
+
+                rejectRequest(req) {
+                    Swal.fire({
+                        title: 'Tolak Permintaan',
+                        input: 'textarea',
+                        inputLabel: 'Alasan Penolakan',
+                        inputPlaceholder: 'Tuliskan alasan penolakan di sini...',
+                        inputAttributes: {
+                            'aria-label': 'Alasan penolakan'
+                        },
+                        showCancelButton: true,
+                        confirmButtonText: 'Tolak',
+                        cancelButtonText: 'Batal',
+                        confirmButtonColor: '#d33',
+                        preConfirm: (reason) => {
+                            if (!reason) {
+                                Swal.showValidationMessage('Alasan penolakan wajib diisi');
+                            }
+                            return reason;
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            req.status = 'rejected';
+                            req.processed_by = this.currentUser.id;
+                            req.rejection_reason = result.value;
+
+                            Swal.fire(
+                                'Ditolak',
+                                'Permintaan telah ditolak.',
+                                'info'
+                            );
+                        }
+                    });
+                }
+            };
+        }
+    </script>
+</body>
+</html>
